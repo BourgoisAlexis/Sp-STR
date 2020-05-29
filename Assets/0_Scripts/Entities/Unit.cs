@@ -7,40 +7,42 @@ public class Unit : Entity
 {
     #region Variables
     private NavMeshAgent _navMesh;
-
     private bool inrange;
     private bool arrived = true;
+    private BezierCurve _bezierCurve;
 
     protected Transform _transform;
     protected Entity target;
-    protected int attackDamage = 1;
-    protected int range = 3;
-    protected int speed = 5;
-    protected float attackRate = 0.5f;
+    protected int attackDamage;
+    protected int range;
+    protected int speed;
+    protected float attackRate;
     #endregion
 
 
     protected override void Awake()
     {
         base.Awake();
+
         _navMesh = GetComponent<NavMeshAgent>();
         _navMesh.speed = speed;
         _transform = transform;
+        _bezierCurve = GetComponentInChildren<BezierCurve>();
     }
 
-    protected virtual void Start()
+    private void Start()
     {
         StartCoroutine(AutoAttack());
     }
 
     private void Update()
     {
-        if (_navMesh.remainingDistance < 1)
+        if (_navMesh.remainingDistance <= 1)
             arrived = true;
 
         if (target == null && arrived)
                 DetectTarget();
-        else if (target)
+        else if (target != null)
         {
             Vector3 direction = target.transform.position - transform.position;
             float magnitude = Vector3.Magnitude(direction);
@@ -49,28 +51,53 @@ public class Unit : Entity
             {
                 _transform.LookAt(target.transform.position);
                 inrange = true;
+                _navMesh.isStopped = true;
                 arrived = true;
-                SetDestination(_transform.position);
             }
             else
             {
                 inrange = false;
-                arrived = false;
-                SetDestination(target.transform.position);
+                SetDestination(target.transform.position, false);
             }
         }
     }
 
 
-    public void SetDestination(Vector3 _target)
+    public void SetDestination(Vector3 _desti, bool _fromNet)
     {
-        _navMesh.SetDestination(_target);
+        _navMesh.SetDestination(_desti);
+        _navMesh.isStopped = false;
         arrived = false;
+
+        if(!_fromNet)
+            GlobalManager.Instance.OnlineManager.SetUnitDestination(indexInGame, _desti);
     }
 
-    public void SetTarget(Entity _target)
+    public virtual void SetTarget(Entity _target, bool _fromNet)
     {
+        if (target != null)
+            target.RemoveTargetter(this);
+
+        if (_target != null)
+        {
+            _target.AddTargetter(this);
+            _bezierCurve.Activation(true, _target.transform);
+        }
+        else
+            _bezierCurve.Activation(false, null);
+
         target = _target;
+
+        if(!_fromNet)
+            GlobalManager.Instance.OnlineManager.SetUnitTarget(indexInGame, _target == null ? -1 : _target.Index);
+    }
+
+    public override void Destroyed(bool _fromNet)
+    {
+        if (target != null)
+            target.RemoveTargetter(this);
+
+        base.Destroyed(_fromNet);
     }
 
 
@@ -93,7 +120,7 @@ public class Unit : Entity
 
             if (magnitude < oldDist)
             {
-                SetTarget(ent);
+                SetTarget(ent, false);
                 oldDist = magnitude;
             }
         }
@@ -103,9 +130,9 @@ public class Unit : Entity
     {
         while (true)
         {
-            if(target != null)
-                if(inrange)
-                    Attack();
+            if (inrange)
+                if (target != null)
+                        Attack();
 
             yield return new WaitForSeconds(attackRate);
         }
@@ -113,12 +140,7 @@ public class Unit : Entity
 
     protected virtual void Attack()
     {
-        if (target.UpdateHealth(-attackDamage) <= 0)
-        {
-            target.Destroyed();
-            target = null;
-            return;
-        }
+        target.UpdateHealth(-attackDamage);
 
         Ray ray = new Ray(_transform.position, _transform.forward);
         RaycastHit hit;

@@ -7,14 +7,14 @@ public class UnitTank : Unit
 
     protected override void Awake()
     {
-        base.Awake();
-
+        maxHP = 30;
         attackDamage = 2;
         range = 4;
-        speed = 10;
+        speed = 7;
         attackRate = 1f;
+        cost = 10;
 
-        shot.Stop();
+        base.Awake();
     }
 
     protected override void Attack()

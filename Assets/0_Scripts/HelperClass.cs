@@ -10,10 +10,10 @@ public static class HelperClass
                 return Color.white;
 
             case 1:
-                return Color.blue;
+                return new Color(0, 0.4f, 1);
 
             case 2:
-                return Color.red;
+                return new Color(1, 0.1f, 0.2f);
 
 
 

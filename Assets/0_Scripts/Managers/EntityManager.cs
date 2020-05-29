@@ -12,12 +12,17 @@ public class EntityManager : MonoBehaviour
     [SerializeField] private LayerMask entityLayer;
     [SerializeField] private LayerMask groundLayer;
 
+
+    [SerializeField] private List<Entity> entities = new List<Entity>();
     private Vector3 startingPoint;
     private Vector3 currentPoint;
     private float margin = 1.5f; //Margin to display the selection zone
     private List<Unit> selectedUnits = new List<Unit>();
     private Entity selectedEntity;
     private UIManager _uiManager;
+
+    //Accessors
+    public int teamIndex => (int)team;
     #endregion
 
 
@@ -31,6 +36,44 @@ public class EntityManager : MonoBehaviour
     {
         LeftClick();
         RightClick();
+    }
+
+    public void SetTeam(int _index)
+    {
+        team = (e_Teams)_index;
+    }
+
+    public void AddEntity(Entity _entity)
+    {
+        entities.Add(_entity);
+        _entity.SetIndex(entities.Count - 1);
+    }
+
+    public void RemoveEntity(int _index)
+    {
+        entities[_index] = null;
+    }
+
+
+    //FromNet
+    public void SetUnitDestination(int _index, Vector3 _desti)
+    {
+        entities[_index]?.GetComponent<Unit>()?.SetDestination(_desti, true);
+    }
+
+    public void SetUnitTarget(int _index, int _targetIndex)
+    {
+        entities[_index]?.GetComponent<Unit>()?.SetTarget(_targetIndex < 0 ? null : entities[_targetIndex], true);
+    }
+
+    public void DestroyUnit(int _index)
+    {
+        entities[_index].Destroyed(true);
+    }
+
+    public void UpdateHealth(int _index, int _value)
+    {
+        entities[_index].CorrectHealth(_value);
     }
 
 
@@ -153,11 +196,12 @@ public class EntityManager : MonoBehaviour
     {
         for (int i = 0; i < selectedUnits.Count; i++)
         {
-            selectedUnits[i].SetDestination(_destination);
-            selectedUnits[i].SetTarget(_target);
+            selectedUnits[i].SetDestination(_destination, false);
+            selectedUnits[i].SetTarget(_target, false);
         }
 
         UnselectAllUnits();
+        UnselectEntity();
     }
     
     
@@ -175,7 +219,6 @@ public class EntityManager : MonoBehaviour
         if(selectedEntity != null)
         {
             selectedEntity.UnSelect();
-            _uiManager.ShutDownMenus();
             selectedEntity = null;
         }
     }

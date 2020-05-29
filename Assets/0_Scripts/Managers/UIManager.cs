@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -7,16 +8,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Transform uiCanvas;
     [SerializeField] private GameObject healthBarPrefab;
+    [SerializeField] private TextMeshProUGUI money;
+    [SerializeField] private UnitMenu _unitMenu;
 
     private Dictionary<Transform, Transform> needToFollow = new Dictionary<Transform, Transform>();
-    private UnitSpawner _unitSpawner;
     #endregion
 
-
-    private void Awake()
-    {
-        _unitSpawner = GetComponent<UnitSpawner>();
-    }
 
     private void LateUpdate()
     {
@@ -33,19 +30,39 @@ public class UIManager : MonoBehaviour
         return instance.GetComponent<HealthBar>();
     }
 
-    public void RemoveUI(Transform _owner)
+    public void RemoveHealthBar(Transform _owner)
     {
         needToFollow.Remove(_owner);
     }
 
-    public void ActiveUnitMenu(Vector3 _spawnPoint, TeamManager _tm)
+    public void EndWaitingScreen()
+    {
+        uiCanvas.GetComponent<Animator>().SetTrigger("WS_Out");
+    }
+
+    public void ActiveUnitMenu(Vector3 _spawnPoint)
     {
         uiCanvas.GetComponent<Animator>().SetTrigger("UnitMenu");
-        _unitSpawner.SetupSpawn(_spawnPoint, _tm);
+        _unitMenu.SetSpawn(_spawnPoint);
+    }
+
+    public void Deafeat()
+    {
+        uiCanvas.GetComponent<Animator>().SetTrigger("Defeat");
+    }
+
+    public void Victory()
+    {
+        uiCanvas.GetComponent<Animator>().SetTrigger("Victory");
     }
 
     public void ShutDownMenus()
     {
         uiCanvas.GetComponent<Animator>().SetTrigger("UnitMenu");
+    }
+
+    public void UpdateMoney(int _value)
+    {
+        money.text = _value.ToString();
     }
 }

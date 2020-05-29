@@ -6,15 +6,17 @@ public class TeamManager : MonoBehaviour
     #region Variables
     [SerializeField] private e_Teams team;
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] private EntityManager _entityManager;
 
     private List<Entity> entities = new List<Entity>();
 
     //Accessors
     public UIManager UIManager => _uiManager;
+    public e_Teams Team => team;
     #endregion
 
 
-    private void Awake()
+    private void Start()
     {
         Entity[] toAdd = GetComponentsInChildren<Entity>();
         foreach (Entity ent in toAdd)
@@ -28,12 +30,14 @@ public class TeamManager : MonoBehaviour
         {
             entities.Add(_entity);
             _entity.SetupTeam(team, this, _uiManager.SpawnHealthBar(_entity.transform));
+            _entityManager.AddEntity(_entity);
         }
     }
 
     public void RemoveEntity(Entity _entity)
     {
         entities.Remove(_entity);
-        _uiManager.RemoveUI(_entity.transform);
+        _entityManager.RemoveEntity(_entity.Index);
+        _uiManager.RemoveHealthBar(_entity.transform);
     }
 }
