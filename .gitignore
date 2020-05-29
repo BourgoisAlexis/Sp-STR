@@ -13,13 +13,13 @@ ExportedObj/
 .consulo/
 *.csproj
 *.unityproj
-*.sln
 *.suo
 *.tmp
 *.user
 *.userprefs
 *.pidb
 *.booproj
+*.sln
 *.svd
 *.pdb
 *.opendb
