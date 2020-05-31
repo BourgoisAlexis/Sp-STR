@@ -4,11 +4,11 @@ public class CameraController : MonoBehaviour
 {
     #region Variables
     [SerializeField] private float cameraSpeed;
-    [SerializeField] private float margin;
+    [SerializeField] private float screenmargin;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private bool moveWithMouse;
 
+    private bool moveWithMouse;
     private float initialY;
     private Vector3 movement;
     #endregion
@@ -35,15 +35,15 @@ public class CameraController : MonoBehaviour
         Vector2 mousePos = Input.mousePosition;
 
         //Up Down
-        if (Input.GetKey(KeyCode.Z) || mousePos.y > Screen.height - margin && moveWithMouse)
+        if (Input.GetKey(KeyCode.Z) || mousePos.y > Screen.height - screenmargin && moveWithMouse)
             movement.z = -1;
-        else if (Input.GetKey(KeyCode.S) || mousePos.y < margin && moveWithMouse)
+        else if (Input.GetKey(KeyCode.S) || mousePos.y < screenmargin && moveWithMouse)
             movement.z = 1;
 
         //Right Left
-        if (Input.GetKey(KeyCode.D) || mousePos.x > Screen.width - margin && moveWithMouse)
+        if (Input.GetKey(KeyCode.D) || mousePos.x > Screen.width - screenmargin && moveWithMouse)
             movement.x = -1;
-        else if (Input.GetKey(KeyCode.Q) || mousePos.x < margin && moveWithMouse)
+        else if (Input.GetKey(KeyCode.Q) || mousePos.x < screenmargin && moveWithMouse)
             movement.x = 1;
     }
 
@@ -59,6 +59,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    
     public void MoveWithMouse()
     {
         moveWithMouse = !moveWithMouse;

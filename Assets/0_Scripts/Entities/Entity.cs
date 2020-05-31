@@ -6,7 +6,6 @@ public class Entity : MonoBehaviour
 {
     #region Variables
     protected float maxHP;
-    protected int cost;
     protected TeamManager _teamManager;
     protected HealthBar _healthBar;
     protected int indexInGame;
@@ -23,7 +22,6 @@ public class Entity : MonoBehaviour
     public bool Selected => selected;
     public e_Teams Team => team;
     public int Index => indexInGame;
-    public int Cost => cost;
     #endregion
 
 
@@ -121,5 +119,10 @@ public class Entity : MonoBehaviour
         selected = false;
         _meshRenderer.material.color = teamColor;
         _mapIcon.ChangeColor((int)team);
+    }
+
+    public virtual int GetCost()
+    {
+        return 0;
     }
 }

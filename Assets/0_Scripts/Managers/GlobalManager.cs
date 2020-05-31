@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GlobalManager : MonoBehaviour
 {
@@ -22,9 +24,11 @@ public class GlobalManager : MonoBehaviour
     public OnlineManagerVERSUS OnlineManager => _onlineManager;
     public EntityManager EntityManager => _entityManager;
     public UnitSpawner UnitSpawner => _unitSpawner;
+    public UIManager UIManager => _uiManager;
     #endregion
 
 
+    //Beginning
     private void Awake()
     {
         if (Instance == null)
@@ -44,18 +48,6 @@ public class GlobalManager : MonoBehaviour
         _cameraController.enabled = false;
     }
 
-
-    public void FXExplosion(Vector3 _position)
-    {
-        _fxManager.InstantiateFX(_fxManager.Explosion, _position);
-    }
-
-    public void FXImpact(Vector3 _position)
-    {
-        _fxManager.InstantiateFX(_fxManager.Impact, _position);
-    }
-
-
     public void SetupPlayerNumber(int _value)
     {
         playersAlive = _value;
@@ -70,6 +62,7 @@ public class GlobalManager : MonoBehaviour
     }
 
 
+    //End
     public void NexusDestroyed(int _index)
     {
         if (_entityManager.teamIndex == _index)
@@ -84,5 +77,25 @@ public class GlobalManager : MonoBehaviour
             _uiManager.Victory();
         else
             _uiManager.Deafeat();
+
+        StartCoroutine(ReturnToLobby());
+    }
+
+    private IEnumerator ReturnToLobby()
+    {
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(0);
+    }
+
+
+    //FX
+    public void FXExplosion(Vector3 _position)
+    {
+        _fxManager.InstantiateFX(_fxManager.Explosion, _position);
+    }
+
+    public void FXImpact(Vector3 _position)
+    {
+        _fxManager.InstantiateFX(_fxManager.Impact, _position);
     }
 }

@@ -4,29 +4,25 @@ using PlayerIO.GameLibrary;
 
 namespace MushroomsUnity3DExample 
 {
-	public class Player : BasePlayer 
+	public class Player : BasePlayer
 	{
-		public int team;
 	}
 
 
 	[RoomType("Lobby")]
 	public class LobbyCode : Game<Player>
 	{
-
-		// This method is called when an instance of your the game is created
 		public override void GameStarted()
 		{
 			Console.WriteLine("Game is started: " + RoomId);
 		}
 
-		// This method is called when the last player leaves the room, and it's closed down.
 		public override void GameClosed()
 		{
 			Console.WriteLine("RoomId: " + RoomId);
 		}
 
-		// This method is called whenever a player joins the game
+
 		public override void UserJoined(Player player)
 		{
 			foreach (Player pl in Players)
@@ -34,13 +30,12 @@ namespace MushroomsUnity3DExample
 					pl.Send("PlayerJoined", Players.Count());
 		}
 
-		// This method is called when a player leaves the game
 		public override void UserLeft(Player player)
 		{
 			Broadcast("PlayerLeft", player.ConnectUserId);
 		}
 
-		// This method is called when a player sends a message into the server code
+
 		public override void GotMessage(Player player, Message m)
 		{
 			switch (m.Type)
@@ -56,20 +51,17 @@ namespace MushroomsUnity3DExample
 	[RoomType("Versus")]
 	public class GameCode : Game<Player>
 	{
-
-		// This method is called when an instance of your the game is created
 		public override void GameStarted() 
 		{
 			Console.WriteLine("Game is started: " + RoomId);
 		}
 
-		// This method is called when the last player leaves the room, and it's closed down.
 		public override void GameClosed() 
 		{
 			Console.WriteLine("RoomId: " + RoomId);
 		}
 
-		// This method is called whenever a player joins the game
+
 		public override void UserJoined(Player player) 
 		{
 			player.Send("SetupPlayer", Players.Count());
@@ -79,13 +71,12 @@ namespace MushroomsUnity3DExample
 					pl.Send("PlayerJoined", Players.Count());
 		}
 
-		// This method is called when a player leaves the game
 		public override void UserLeft(Player player) 
 		{
 			Broadcast("PlayerLeft", player.ConnectUserId);
 		}
 
-		// This method is called when a player sends a message into the server code
+
 		public override void GotMessage(Player player, Message m) {
 			switch(m.Type) 
 			{

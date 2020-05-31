@@ -14,7 +14,7 @@ public class UnitMenu : MonoBehaviour
     public void SetTeam(int _index)
     {
         foreach (UnitMenuButton b in buttons)
-            b.SetTeam(_index);
+            b.Setup(_index);
     }
 
     public void SetSpawn(Vector3 _spawnPoint)

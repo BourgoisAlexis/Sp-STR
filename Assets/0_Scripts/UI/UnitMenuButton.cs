@@ -21,10 +21,9 @@ public class UnitMenuButton : Button
         _image = GetComponent<Image>();
     }
 
-    public void SetTeam(int _index)
+    public void Setup(int _index)
     {
         teamIndex = _index;
-
         GetComponentInChildren<TextMeshProUGUI>().text = GlobalManager.Instance.UnitSpawner.GetCost(index).ToString();
     }
 

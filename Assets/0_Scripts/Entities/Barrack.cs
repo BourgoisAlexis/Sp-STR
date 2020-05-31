@@ -17,13 +17,13 @@ public class Barrack : Entity
     {
         base.Select();
 
-        _teamManager.UIManager.ActiveUnitMenu(spawnPoint.position);
+        GlobalManager.Instance.UIManager.ActiveUnitMenu(spawnPoint.position);
     }
 
     public override void UnSelect()
     {
         base.UnSelect();
 
-        _teamManager.UIManager.ShutDownMenus();
+        GlobalManager.Instance.UIManager.ShutDownMenus();
     }
 }

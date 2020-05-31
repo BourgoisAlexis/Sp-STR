@@ -43,6 +43,8 @@ public class EntityManager : MonoBehaviour
         team = (e_Teams)_index;
     }
 
+
+    //Entities
     public void AddEntity(Entity _entity)
     {
         entities.Add(_entity);

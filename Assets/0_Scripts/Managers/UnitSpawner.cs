@@ -27,23 +27,6 @@ public class UnitSpawner : MonoBehaviour
     }
 
 
-    public bool Pay(int _index)
-    {
-        int cost = unitPrefabs[_index].GetComponent<Entity>().Cost;
-
-        if (cost > money)
-            return false;
-
-        money -= cost;
-        _uiManager.UpdateMoney(money);
-        return true;
-    }
-
-    public int GetCost(int _index)
-    {
-        return unitPrefabs[_index].GetComponent<Entity>().Cost;
-    }
-
     public void SpawnUnit(int _index, Vector3 _pos, int _tmIndex, bool _fromNet)
     {
         GameObject instance = Instantiate(unitPrefabs[_index], _pos, Quaternion.identity);
@@ -52,6 +35,25 @@ public class UnitSpawner : MonoBehaviour
 
         if (!_fromNet)
             _onlineManager.SpawnUnit(_index, _pos, _tmIndex);
+    }
+
+
+    //Money
+    public int GetCost(int _index)
+    {
+        return unitPrefabs[_index].GetComponent<Entity>().GetCost();
+    }
+
+    public bool Pay(int _index)
+    {
+        int cost = GetCost(_index);
+
+        if (cost > money)
+            return false;
+
+        money -= cost;
+        _uiManager.UpdateMoney(money);
+        return true;
     }
 
     private IEnumerator GenerateMoney()

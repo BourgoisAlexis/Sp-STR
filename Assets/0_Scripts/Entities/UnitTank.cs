@@ -4,7 +4,6 @@ public class UnitTank : Unit
 {
     [SerializeField] private ParticleSystem shot;
 
-
     protected override void Awake()
     {
         maxHP = 30;
@@ -12,7 +11,6 @@ public class UnitTank : Unit
         range = 4;
         speed = 7;
         attackRate = 1f;
-        cost = 10;
 
         base.Awake();
     }
@@ -21,5 +19,10 @@ public class UnitTank : Unit
     {
         base.Attack();
         shot.Play();
+    }
+
+    public override int GetCost()
+    {
+        return 10;
     }
 }

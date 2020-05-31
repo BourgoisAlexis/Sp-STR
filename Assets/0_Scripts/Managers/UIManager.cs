@@ -11,29 +11,30 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI money;
     [SerializeField] private UnitMenu _unitMenu;
 
-    private Dictionary<Transform, Transform> needToFollow = new Dictionary<Transform, Transform>();
+    private Dictionary<Transform, Transform> uiTarget = new Dictionary<Transform, Transform>();
     #endregion
 
 
+    //HealthBars
     private void LateUpdate()
     {
-        foreach (KeyValuePair<Transform, Transform> follow in needToFollow)
+        foreach (KeyValuePair<Transform, Transform> follow in uiTarget)
             follow.Value.position = mainCamera.WorldToScreenPoint(follow.Key.position + Vector3.up * 0.7f);
     }
-
 
     public HealthBar SpawnHealthBar(Transform _owner)
     {
         GameObject instance = Instantiate(healthBarPrefab, uiCanvas);
-        needToFollow.Add(_owner, instance.transform);
+        uiTarget.Add(_owner, instance.transform);
         instance.transform.SetAsFirstSibling();
         return instance.GetComponent<HealthBar>();
     }
 
     public void RemoveHealthBar(Transform _owner)
     {
-        needToFollow.Remove(_owner);
+        uiTarget.Remove(_owner);
     }
+
 
     public void EndWaitingScreen()
     {
@@ -46,6 +47,13 @@ public class UIManager : MonoBehaviour
         _unitMenu.SetSpawn(_spawnPoint);
     }
 
+    public void UpdateMoney(int _value)
+    {
+        money.text = _value.ToString();
+    }
+    
+
+    //End
     public void Deafeat()
     {
         uiCanvas.GetComponent<Animator>().SetTrigger("Defeat");
@@ -56,13 +64,9 @@ public class UIManager : MonoBehaviour
         uiCanvas.GetComponent<Animator>().SetTrigger("Victory");
     }
 
+
     public void ShutDownMenus()
     {
         uiCanvas.GetComponent<Animator>().SetTrigger("UnitMenu");
-    }
-
-    public void UpdateMoney(int _value)
-    {
-        money.text = _value.ToString();
     }
 }

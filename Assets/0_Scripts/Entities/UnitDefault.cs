@@ -8,8 +8,12 @@ public class UnitDefault : Unit
         range = 3;
         speed = 5;
         attackRate = 0.5f;
-        cost = 5;
 
         base.Awake();
+    }
+
+    public override int GetCost()
+    {
+        return 5;
     }
 }
