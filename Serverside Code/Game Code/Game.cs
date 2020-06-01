@@ -8,7 +8,6 @@ namespace MushroomsUnity3DExample
 	{
 	}
 
-
 	[RoomType("Lobby")]
 	public class LobbyCode : Game<Player>
 	{

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UnitTank : Unit
+public class UnitTank : Soldier
 {
     [SerializeField] private ParticleSystem shot;
 
@@ -19,10 +19,5 @@ public class UnitTank : Unit
     {
         base.Attack();
         shot.Play();
-    }
-
-    public override int GetCost()
-    {
-        return 10;
     }
 }

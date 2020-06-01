@@ -18,7 +18,7 @@ public class EntityManager : MonoBehaviour
     private Vector3 currentPoint;
     private float margin = 1.5f; //Margin to display the selection zone
     private List<Unit> selectedUnits = new List<Unit>();
-    private Entity selectedEntity;
+    private Selectable selectedEntity;
     private UIManager _uiManager;
 
     //Accessors
@@ -75,7 +75,8 @@ public class EntityManager : MonoBehaviour
 
     public void UpdateHealth(int _index, int _value)
     {
-        entities[_index].CorrectHealth(_value);
+        Selectable ent = (Selectable)entities[_index];
+        ent.CorrectHealth(_value);
     }
 
 
@@ -100,6 +101,7 @@ public class EntityManager : MonoBehaviour
                 currentPoint = hit.point;
 
                 Unit _unit = hit.transform.GetComponent<Unit>();
+                Selectable _selectable = hit.transform.GetComponent<Selectable>();
                 Entity _entity = hit.transform.GetComponent<Entity>();
 
                 UnselectEntity();
@@ -113,15 +115,19 @@ public class EntityManager : MonoBehaviour
                     }
                     else
                     {
-                        SendUnits(hit.point, _unit);
+                        SendUnits(hit.point, _unit, UnitType.Soldier);
                     }
+                }
+                else if (_selectable)
+                {
+                    if (_selectable.Team == team)
+                        SelectEntity(_selectable);
+                    else
+                        SendUnits(hit.point, _selectable, UnitType.Soldier);
                 }
                 else if (_entity)
                 {
-                    if (_entity.Team == team)
-                        SelectEntity(_entity);
-                    else
-                        SendUnits(hit.point, _entity);
+                    SendUnits(hit.point, _entity, UnitType.Miner);
                 }
                 else
                 {
@@ -170,7 +176,7 @@ public class EntityManager : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit, 100, groundLayer))
-                SendUnits(hit.point, null);
+                SendUnits(hit.point, null, UnitType.Default);
         }
     }
 
@@ -194,12 +200,16 @@ public class EntityManager : MonoBehaviour
             UnselectUnit(selectedUnits[i]);
     }
 
-    private void SendUnits(Vector3 _destination, Entity _target)
+    private void SendUnits(Vector3 _destination, Entity _target, UnitType _unitType)
     {
         for (int i = 0; i < selectedUnits.Count; i++)
         {
             selectedUnits[i].SetDestination(_destination, false);
-            selectedUnits[i].SetTarget(_target, false);
+
+            if (_target == null)
+                selectedUnits[i].SetTarget(_target, false);
+            else if (selectedUnits[i].UnitType == _unitType)
+                selectedUnits[i].SetTarget(_target, false);
         }
 
         UnselectAllUnits();
@@ -208,7 +218,7 @@ public class EntityManager : MonoBehaviour
     
     
     //Entities
-    private void SelectEntity(Entity _entity)
+    private void SelectEntity(Selectable _entity)
     {
         UnselectAllUnits();
         UnselectEntity();

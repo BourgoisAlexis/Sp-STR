@@ -86,8 +86,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetedBy: []
-  arrived: 1
-  target: {fileID: 0}
+  cost: 10
+  unitType: 1
   shot: {fileID: 7179727336550810532}
 --- !u!1 &3092249998196336247
 GameObject:

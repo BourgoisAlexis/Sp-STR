@@ -1,5 +1,5 @@
 ﻿
-public class Nexus : Entity
+public class Nexus : Selectable
 {
     protected override void Awake()
     {

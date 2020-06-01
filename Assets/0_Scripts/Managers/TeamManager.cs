@@ -6,7 +6,7 @@ public class TeamManager : MonoBehaviour
     #region Variables
     [SerializeField] private e_Teams team;
 
-    private List<Entity> entities = new List<Entity>();
+    private List<Selectable> entities = new List<Selectable>();
 
     //Accessors
     public e_Teams Team => team;
@@ -15,13 +15,13 @@ public class TeamManager : MonoBehaviour
 
     private void Start()
     {
-        Entity[] toAdd = GetComponentsInChildren<Entity>();
-        foreach (Entity ent in toAdd)
+        Selectable[] toAdd = GetComponentsInChildren<Selectable>();
+        foreach (Selectable ent in toAdd)
             AddEntity(ent);
     }
 
 
-    public void AddEntity(Entity _entity)
+    public void AddEntity(Selectable _entity)
     {
         if (!entities.Contains(_entity))
         {
@@ -31,7 +31,7 @@ public class TeamManager : MonoBehaviour
         }
     }
 
-    public void RemoveEntity(Entity _entity)
+    public void RemoveEntity(Selectable _entity)
     {
         entities.Remove(_entity);
         GlobalManager.Instance.EntityManager.RemoveEntity(_entity.Index);

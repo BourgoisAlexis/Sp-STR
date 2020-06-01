@@ -1,5 +1,4 @@
-﻿
-public class UnitDefault : Unit
+﻿public class UnitDefault : Soldier
 {
     protected override void Awake()
     {
@@ -10,10 +9,5 @@ public class UnitDefault : Unit
         attackRate = 0.5f;
 
         base.Awake();
-    }
-
-    public override int GetCost()
-    {
-        return 5;
     }
 }
