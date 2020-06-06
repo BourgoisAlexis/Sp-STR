@@ -12,20 +12,22 @@ public enum UnitType
 public class Unit : Selectable
 {
     #region Variables
-    [SerializeField] protected UnitType unitType;
+    [SerializeField] protected int range;
+    [SerializeField] protected int speed;
 
+    protected UnitType unitType;
     protected NavMeshAgent _navMesh;
     protected bool arrived = true;
     protected BezierCurve _bezierCurve;
     protected bool inrange;
     protected Transform _transform;
     protected Entity target;
-    protected int range;
-    protected int speed;
-
+    
+    [SerializeField] private int cost;
 
     //Accessors
     public UnitType UnitType => unitType;
+    public int Cost => cost;
     #endregion
 
 

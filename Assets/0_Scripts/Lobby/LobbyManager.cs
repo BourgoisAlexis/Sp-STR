@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using TMPro;
-using System.Collections;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -9,15 +8,17 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject[] fields;
     [SerializeField] private GameObject returnButton;
 
-    [SerializeField] private TextMeshProUGUI errorText;
+    private OnlineManagerLOBBY _onlineManager;
+    private LobbyError _error;
     #endregion
 
 
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        _onlineManager = GetComponent<OnlineManagerLOBBY>();
+        _error = GetComponent<LobbyError>();
 
-        errorText.text = "";
         Base();
     }
 
@@ -43,29 +44,22 @@ public class LobbyManager : MonoBehaviour
         returnButton.SetActive(true);
     }
 
+
     public void CreateRoom(TextMeshProUGUI _text)
     {
-        GetComponent<OnlineManagerLOBBY>().CreateRoom(_text.text);
+        _onlineManager.CreateRoom(_text.text);
     }
 
     public void JoinRoom(TextMeshProUGUI _text)
     {
-        GetComponent<OnlineManagerLOBBY>().JoinRoom(_text.text);
+        _onlineManager.JoinRoom(_text.text);
     }
 
     public void RoomError(string _roomName, bool _create)
     {
-        if(_create)
-            errorText.text = "The name '" + _roomName + "' is already used by another player.";
+        if (_create)
+            _error.SetText("The name '" + _roomName + "' is already used by another player.");
         else
-            errorText.text = "The room '" + _roomName + "' does not exist.";
-
-        StartCoroutine(TextDelay());
-    }
-
-    private IEnumerator TextDelay()
-    {
-        yield return new WaitForSeconds(2f);
-        errorText.text = "";
+            _error.SetText("The room '" + _roomName + "' does not exist.");
     }
 }

@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class UnitMiner : Unit
 {
-    private float farmingRate = 2f;
+    #region Variables
+    [SerializeField] private float harvestRate;
+    #endregion
+
 
     protected override void Awake()
     {
-        maxHP = 30;
-        range = 3;
-        speed = 7;
-
         base.Awake();
+
+        unitType = UnitType.Miner;
     }
 
     private void Start()
@@ -21,12 +22,12 @@ public class UnitMiner : Unit
 
     private void Update()
     {
-        if (_navMesh.remainingDistance <= 1)
+        if (_navMesh.remainingDistance <= range)
             arrived = true;
 
         if (target != null)
         {
-            Vector3 direction = target.transform.position - transform.position;
+            Vector3 direction = target.transform.position - _transform.position;
             float magnitude = Vector3.Magnitude(direction);
 
             if (magnitude <= range)
@@ -44,6 +45,7 @@ public class UnitMiner : Unit
         }
     }
 
+
     private IEnumerator AutoHarvest()
     {
         while (true)
@@ -52,7 +54,7 @@ public class UnitMiner : Unit
                 if (target != null)
                     Harvest();
 
-            yield return new WaitForSeconds(farmingRate);
+            yield return new WaitForSeconds(harvestRate);
         }
     }
 

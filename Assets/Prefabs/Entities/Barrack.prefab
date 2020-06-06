@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb03af289d8fd3478018e8c2f0d8610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapIcon: {fileID: 5258086844157337053}
-  _meshRenderer: {fileID: 4500481761640325455}
+  maxHP: 70
+  cost: 0
   spawnPoint: {fileID: 3016473910437206691}
 --- !u!1 &9198898788900264086
 GameObject:
@@ -252,15 +252,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6817254116422659635}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5258086844157337053 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1613338011680257006, guid: 644ce7fa0d4c5d14e90970668c896a49,
-    type: 3}
-  m_PrefabInstance: {fileID: 6817254116422659635}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab7348f770f019245ab14df9f388d215, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

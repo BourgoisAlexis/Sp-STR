@@ -4,9 +4,10 @@ using System.Collections.Generic;
 public class Entity : MonoBehaviour
 {
     #region Variables
-    [SerializeField] protected List<Unit> targetedBy = new List<Unit>();
+    protected List<Unit> targetedBy = new List<Unit>();
+    protected int indexInGame;
 
-    [SerializeField] protected int indexInGame;
+    //Accessors
     public int Index => indexInGame;
     #endregion
 

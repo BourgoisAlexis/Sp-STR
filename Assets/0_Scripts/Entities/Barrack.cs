@@ -5,14 +5,6 @@ public class Barrack : Selectable
     [SerializeField] private Transform spawnPoint;
 
 
-    protected override void Awake()
-    {
-        maxHP = 50;
-
-        base.Awake();
-    }
-
-
     public override void Select()
     {
         base.Select();

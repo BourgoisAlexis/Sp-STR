@@ -41,7 +41,7 @@ public class UnitSpawner : MonoBehaviour
     //Money
     public int GetCost(int _index)
     {
-        return unitPrefabs[_index].GetComponent<Selectable>().Cost;
+        return unitPrefabs[_index].GetComponent<Unit>().Cost;
     }
 
     public bool Pay(int _index)

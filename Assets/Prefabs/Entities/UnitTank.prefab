@@ -85,9 +85,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f42b6b0718380459321e2c6492e3ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetedBy: []
+  maxHP: 50
   cost: 10
   unitType: 1
+  range: 7
+  speed: 7
+  attackRate: 2
+  attackDamage: 4
   shot: {fileID: 7179727336550810532}
 --- !u!1 &3092249998196336247
 GameObject:

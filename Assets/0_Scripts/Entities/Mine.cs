@@ -2,8 +2,11 @@
 
 public class Mine : Entity
 {
-    private int resources = 10;
+    #region Variables
+    private int harvestNumber = 10;
     private int harvestValue;
+    #endregion
+
 
     private void Start()
     {
@@ -13,9 +16,9 @@ public class Mine : Entity
     public void Harvest()
     {
         GlobalManager.Instance.UnitSpawner.GetMoney(harvestValue);
-        resources --;
+        harvestNumber --;
 
-        if (resources <= 0)
+        if (harvestNumber <= 0)
             Destroyed(false);
     }
 }

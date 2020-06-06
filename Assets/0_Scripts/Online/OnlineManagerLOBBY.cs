@@ -7,36 +7,25 @@ using UnityEngine.SceneManagement;
 public class OnlineManagerLOBBY : MonoBehaviour
 {
 	#region Variables
-	private string userid;
+	[SerializeField] private GameObject login;
+	[SerializeField] private GameObject lobby;
+
+	private string userID;
+	private string passWord;
+	private bool createAccount;
 	private string roomID;
-	private bool create;
-	
-	private Client client;
+	private bool createRoom;
 	private List<Message> messages = new List<Message>();
+	private Client _client;
 	private Connection _connection;
 	private AsyncOperation loadingScene;
 	#endregion
 
 
-	void Start()
+	private void Start()
 	{
-		Application.runInBackground = true;
-
-		// Create a random userid 
-		System.Random random = new System.Random();
-		userid = "Guest" + random.Next(0, 10000);
-
-		Debug.Log("Starting");
-
-		PlayerIO.Authenticate
-		(
-			"str-e3p7vepld0ogaemgqgc7q",                                    //Your game id
-			"public",                                                       //Your connection id
-			new Dictionary<string, string> { { "userId", userid }, },       //Authentication arguments
-			null,                                                           //PlayerInsight segments
-			AuthentSuccess(userid),
-			AuthentFail()
-		);
+		lobby.SetActive(false);
+		login.SetActive(true);
 	}
 
 	void FixedUpdate()
@@ -61,34 +50,40 @@ public class OnlineManagerLOBBY : MonoBehaviour
 	}
 
 
-	private Callback<Client> AuthentSuccess(string userid)
+	public void Connect(string _userID, string _passWord, bool _createAccount)
 	{
-		return delegate (Client _client)
+		Application.runInBackground = true;
+
+		userID = _userID;
+		passWord = _passWord;
+		createAccount = _createAccount;
+
+		PlayerIO.Authenticate
+		(
+			"str-e3p7vepld0ogaemgqgc7q",                                    //Your game id
+			"public",                                                       //Your connection id
+			new Dictionary<string, string> { { "userId", userID }, },       //Authentication arguments
+			null,                                                           //PlayerInsight segments
+			AuthentSuccess(),
+			AuthentFail()
+		);
+	}
+
+	private Callback<Client> AuthentSuccess()
+	{
+		return delegate (Client client)
 		{
 			Debug.Log("Successfully connected to Player.IO");
-			client = _client;
 
-			Debug.Log("Create ServerEndpoint");
-			// Comment out the line below to use the live servers instead of your development server
-			client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
+			_client = client;
 
-			Debug.Log("CreateJoinRoom");
-			//Create or join the room
-			client.Multiplayer.CreateJoinRoom
-			(
-				"Lobby",								//Room id. If set to null a random roomid is used
-				"Lobby",								//The room type started on the server
-				true,                                   //Should the room be visible in the lobby?
-				null,
-				null,
-				delegate (Connection connection)
-				{
-					Debug.Log("Joined Room.");
-					// We successfully joined a room so set up the message handler
-					_connection = connection;
-					_connection.OnMessage += handlemessage;
-				}
-			);
+			if (createAccount)
+			{
+				_client.BigDB.Load("AccountObjects", userID, CreateAccount());
+				return;
+			}
+
+			_client.BigDB.Load("AccountObjects", userID, Login());
 		};
 	}
 
@@ -101,22 +96,75 @@ public class OnlineManagerLOBBY : MonoBehaviour
 	}
 
 
-	private void handlemessage(object sender, Message m)
+	private Callback<DatabaseObject> CreateAccount()
 	{
-		messages.Add(m);
+		return delegate (DatabaseObject _account)
+		{
+			if(_account != null)
+			{
+				GetComponent<LobbyError>().SetText("This username already exists");
+				return;
+			}
+
+			DatabaseObject newAccount = new DatabaseObject();
+			newAccount.Set("PassWord", passWord);
+			newAccount.Set("Victories", 0);
+			newAccount.Set("Deafeats", 0);
+
+			_client.BigDB.CreateObject("AccountObjects", userID, newAccount, null);
+			GetComponent<LoginManager>().Base();
+		};
+	}
+
+	private Callback<DatabaseObject> Login()
+	{
+		return delegate (DatabaseObject _account)
+		{
+			if (_account == null)
+			{
+				Debug.Log("This accrount does not exist");
+				return;
+			}
+			if (passWord != _account.GetString("PassWord"))
+				return;
+
+			Debug.Log("Connected with correct Logins");
+
+			Debug.Log("Create ServerEndpoint");
+			// Comment out the line below to use the live servers instead of your development server
+			_client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
+
+			lobby.SetActive(true);
+			login.SetActive(false);
+
+			_client.Multiplayer.CreateJoinRoom
+			(
+				"Lobby",                                //Room id. If set to null a random roomid is used
+				"Lobby",                                //The room type started on the server
+				true,                                   //Should the room be visible in the lobby?
+				null,
+				null,
+				delegate (Connection connection)
+				{
+					Debug.Log("Joined Room.");
+					_connection = connection;
+					_connection.OnMessage += handlemessage;
+				}
+			);
+		};
 	}
 
 
 	public void CreateRoom(string _roomName)
 	{
 		roomID = _roomName;
-		client.Multiplayer.ListRooms("Versus", null, 10, 0, CreateRoomCheck(), NoRoomList());
+		_client.Multiplayer.ListRooms("Versus", null, 10, 0, CreateRoomCheck(), NoRoomList());
 	}
 
 	public void JoinRoom(string _roomName)
 	{
 		roomID = _roomName;
-		client.Multiplayer.ListRooms("Versus", null, 10, 0, JoinRoomCheck(), NoRoomList());
+		_client.Multiplayer.ListRooms("Versus", null, 10, 0, JoinRoomCheck(), NoRoomList());
 	}
 
 	private Callback<RoomInfo[]> CreateRoomCheck()
@@ -134,7 +182,7 @@ public class OnlineManagerLOBBY : MonoBehaviour
 				return;
 			}
 
-			create = true;
+			createRoom = true;
 			LoadNextScene();
 		};
 	}
@@ -145,7 +193,7 @@ public class OnlineManagerLOBBY : MonoBehaviour
 		{
 			int roomNumb = 0;
 			foreach (RoomInfo i in roomInfos)
-				if (i.Id == roomID)
+				if (i.Id == roomID && i.OnlineUsers < 2)
 					roomNumb++;
 
 			if (roomNumb <= 0)
@@ -154,7 +202,7 @@ public class OnlineManagerLOBBY : MonoBehaviour
 				return;
 			}
 
-			create = false;
+			createRoom = false;
 			LoadNextScene();
 		};
 	}
@@ -168,19 +216,24 @@ public class OnlineManagerLOBBY : MonoBehaviour
 	}
 
 
-	//First
+	private void handlemessage(object sender, Message m)
+	{
+		messages.Add(m);
+	}
+	
+	
 	public void LoadNextScene()
 	{
 		StartCoroutine(ActualLoadScene(1));
 	}
-	//Second
+
 	private IEnumerator ActualLoadScene(int _sceneIndex)
 	{
 		loadingScene = SceneManager.LoadSceneAsync(_sceneIndex, LoadSceneMode.Single);
 		while (!loadingScene.isDone)
 			yield return null;
 
-		GlobalManager.Instance.OnlineManager.Connect(userid, roomID, create);
+		GlobalManager.Instance.OnlineManager.Connect(userID, roomID, createRoom);
 		Destroy(gameObject);
 	}
 }

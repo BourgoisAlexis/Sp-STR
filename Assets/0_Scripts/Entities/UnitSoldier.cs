@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Soldier : Unit
+public class UnitSoldier : Unit
 {
-    protected float attackRate;
-    protected int attackDamage;
+    #region Variables
+    [SerializeField] protected float attackRate;
+    [SerializeField] protected int attackDamage;
+    #endregion
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        unitType = UnitType.Soldier;
+    }
 
     private void Start()
     {
@@ -15,14 +23,14 @@ public class Soldier : Unit
 
     private void Update()
     {
-        if (_navMesh.remainingDistance <= 1)
+        if (_navMesh.remainingDistance <= range)
             arrived = true;
 
         if (target == null && arrived)
             DetectTarget();
         else if (target != null)
         {
-            Vector3 direction = target.transform.position - transform.position;
+            Vector3 direction = target.transform.position - _transform.position;
             float magnitude = Vector3.Magnitude(direction);
 
             if (magnitude <= range)

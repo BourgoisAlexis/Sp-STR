@@ -5,11 +5,12 @@ using UnityEngine;
 public class Selectable : Entity
 {
     #region Variables
-    protected float maxHP;
+    [SerializeField] protected float maxHP;
+
     protected TeamManager _teamManager;
     protected HealthBar _healthBar;
 
-    [SerializeField] private int cost;
+
     private float currentHP;
     private bool selected;
     private Color teamColor;
@@ -20,7 +21,6 @@ public class Selectable : Entity
     //Accessors
     public bool Selected => selected;
     public e_Teams Team => team;
-    public int Cost => cost;
     #endregion
 
 
