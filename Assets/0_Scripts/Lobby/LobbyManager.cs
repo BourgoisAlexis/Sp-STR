@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class LobbyManager : MonoBehaviour
 {
     #region Variables
-    [SerializeField] private GameObject[] buttons;
-    [SerializeField] private GameObject[] fields;
-    [SerializeField] private GameObject returnButton;
+    [SerializeField] private GameObject createB;
+    [SerializeField] private GameObject joinB;
+    [SerializeField] private GameObject validB;
+    [SerializeField] private GameObject returnB;
+    [SerializeField] private TMP_InputField field;
 
     private OnlineManagerLOBBY _onlineManager;
     private LobbyError _error;
+    private bool create;
     #endregion
 
 
@@ -25,34 +29,32 @@ public class LobbyManager : MonoBehaviour
 
     public void Base()
     {
-        foreach (GameObject b in buttons)
-            b.SetActive(true);
+        createB.SetActive(true);
+        joinB.SetActive(true);
 
-        foreach (GameObject f in fields)
-            f.SetActive(false);
-
-        returnButton.SetActive(false);
+        returnB.SetActive(false);
+        validB.SetActive(false);
+        field.gameObject.SetActive(false);
     }
 
-    public void DisplayInputField(int _index)
+    public void DisplayInputField(bool _create)
     {
-        foreach (GameObject b in buttons)
-            b.SetActive(false);
+        create = _create;
 
-        fields[_index].SetActive(true);
+        createB.SetActive(false);
+        joinB.SetActive(false);
 
-        returnButton.SetActive(true);
+        returnB.SetActive(true);
+        validB.SetActive(true);
+        field.gameObject.SetActive(true);
     }
 
-
-    public void CreateRoom(TextMeshProUGUI _text)
+    public void Valid()
     {
-        _onlineManager.CreateRoom(_text.text);
-    }
-
-    public void JoinRoom(TextMeshProUGUI _text)
-    {
-        _onlineManager.JoinRoom(_text.text);
+        if (create)
+            _onlineManager.CreateRoom(field.text);
+        else
+            _onlineManager.JoinRoom(field.text);
     }
 
     public void RoomError(string _roomName, bool _create)
