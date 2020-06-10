@@ -70,7 +70,7 @@ public class EntityManager : MonoBehaviour
 
     public void DestroyUnit(int _index)
     {
-        entities[_index].Destroyed(true);
+        entities[_index]?.Destroyed(true);
     }
 
     public void UpdateHealth(int _index, int _value)

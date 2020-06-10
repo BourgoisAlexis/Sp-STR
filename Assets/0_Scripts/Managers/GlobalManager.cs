@@ -57,7 +57,7 @@ public class GlobalManager : MonoBehaviour
             _uiManager.EndWaitingScreen();
             _entityManager.enabled = true;
             _unitSpawner.enabled = true;
-            //_cameraController.enabled = true;
+            _cameraController.enabled = true;
         }
     }
 
@@ -83,8 +83,11 @@ public class GlobalManager : MonoBehaviour
 
     private IEnumerator ReturnToLobby()
     {
+        _onlineManager.Disconnect();
         yield return new WaitForSeconds(3);
         SceneManager.LoadScene(0);
+
+        Destroy(gameObject);
     }
 
 

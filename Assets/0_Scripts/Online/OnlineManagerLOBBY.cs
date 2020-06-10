@@ -122,17 +122,20 @@ public class OnlineManagerLOBBY : MonoBehaviour
 		{
 			if (_account == null)
 			{
-				Debug.Log("This accrount does not exist");
+				GetComponent<LobbyError>().SetText("This username does not exist");
 				return;
 			}
 			if (passWord != _account.GetString("PassWord"))
+			{
+				GetComponent<LobbyError>().SetText("Your username or password is incorrect");
 				return;
+			}
 
 			Debug.Log("Connected with correct Logins");
 
 			Debug.Log("Create ServerEndpoint");
 			// Comment out the line below to use the live servers instead of your development server
-			_client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
+			//_client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
 
 			lobby.SetActive(true);
 			login.SetActive(false);
@@ -230,10 +233,13 @@ public class OnlineManagerLOBBY : MonoBehaviour
 	private IEnumerator ActualLoadScene(int _sceneIndex)
 	{
 		loadingScene = SceneManager.LoadSceneAsync(_sceneIndex, LoadSceneMode.Single);
+		_connection.Disconnect();
+
 		while (!loadingScene.isDone)
 			yield return null;
 
 		GlobalManager.Instance.OnlineManager.Connect(userID, roomID, createRoom);
+
 		Destroy(gameObject);
 	}
 }
