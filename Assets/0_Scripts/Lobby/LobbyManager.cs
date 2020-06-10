@@ -10,6 +10,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject validB;
     [SerializeField] private GameObject returnB;
     [SerializeField] private TMP_InputField field;
+    [SerializeField] private TextMeshProUGUI[] texts;
 
     private OnlineManagerLOBBY _onlineManager;
     private LobbyError _error;
@@ -26,6 +27,13 @@ public class LobbyManager : MonoBehaviour
         Base();
     }
 
+
+    public void Setup(string _name, int _win, int _lose)
+    {
+        texts[0].text = _name;
+        texts[1].text = "Wins : " + _win.ToString();
+        texts[2].text = "Loses : " + _lose.ToString();
+    }
 
     public void Base()
     {

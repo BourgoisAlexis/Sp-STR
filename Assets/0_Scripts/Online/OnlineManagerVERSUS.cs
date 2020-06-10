@@ -7,12 +7,14 @@ public class OnlineManagerVERSUS : MonoBehaviour
 	#region Variables
 	[SerializeField] private UnitMenu _unitMenu;
 
-	private string userid;
+	private string userID;
 	private string roomID;
+	private DatabaseObject account;
 	private bool create;
 
 	private List<Message> messages = new List<Message>();
 	private Connection _connection;
+	private Client _client;
 	private EntityManager _entityManager;
 	#endregion
 
@@ -22,12 +24,13 @@ public class OnlineManagerVERSUS : MonoBehaviour
 		_entityManager = GetComponent<EntityManager>();
 	}
 
-	public void Connect(string _id, string _roomID, bool _create)
+	public void Connect(string _id, string _roomID, bool _create, DatabaseObject _account)
 	{
 		Application.runInBackground = true;
-		userid = _id;
+		userID = _id;
 		roomID = _roomID;
 		create = _create;
+		account = _account;
 
 		Debug.Log("Starting");
 
@@ -35,9 +38,9 @@ public class OnlineManagerVERSUS : MonoBehaviour
 		(
 			"str-e3p7vepld0ogaemgqgc7q",
 			"public",
-			new Dictionary<string, string> { { "userId", userid }, },
+			new Dictionary<string, string> { { "userId", userID }, },
 			null,
-			AuthentSuccess(userid),
+			AuthentSuccess(userID),
 			AuthentFail()
 		);
 	}
@@ -96,18 +99,19 @@ public class OnlineManagerVERSUS : MonoBehaviour
 		return delegate (Client client)
 		{
 			Debug.Log("Successfully connected to Player.IO");
+			_client = client;
 
 			Debug.Log("Create ServerEndpoint");
 			// Comment out the line below to use the live servers instead of your development server
 			//client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
-			
-			if(create)
+
+			if (create)
 			{
 				client.Multiplayer.CreateJoinRoom
 				(
-					roomID,								//Room id. If set to null a random roomid is used
-					"Versus",								//The room type started on the server
-					true,									//Should the room be visible in the lobby?
+					roomID,                             //Room id. If set to null a random roomid is used
+					"Versus",                               //The room type started on the server
+					true,                                   //Should the room be visible in the lobby?
 					null,
 					null,
 					delegate (Connection connection)
@@ -145,18 +149,18 @@ public class OnlineManagerVERSUS : MonoBehaviour
 	}
 
 
-    private void handlemessage(object sender, Message m)
+	private void handlemessage(object sender, Message m)
 	{
 		messages.Add(m);
 	}
 
-	
+
 	//Setup
 	private void SetupPlayer(int _index)
 	{
 		GetComponent<EntityManager>().SetTeam(_index);
 		_unitMenu.SetTeam(_index);
-		
+
 		GetComponent<GlobalManager>().SetupPlayerNumber(_index);
 	}
 
@@ -199,6 +203,19 @@ public class OnlineManagerVERSUS : MonoBehaviour
 
 		if (_connection != null)
 			_connection.Send("UpdateHealth", toSend);
+	}
+
+	public void GameEnd(bool _won)
+	{
+		if (_won)
+			account.Set("Victories", account.GetInt("Victories") + 1);
+		else
+			account.Set("Defeats", account.GetInt("Defeats") + 1);
+
+		account.Save(delegate ()
+		{
+			GetComponent<GlobalManager>().ReturnToLobby();
+		});
 	}
 
 	public void Disconnect()

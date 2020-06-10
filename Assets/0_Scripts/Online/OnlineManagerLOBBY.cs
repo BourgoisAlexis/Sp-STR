@@ -12,6 +12,8 @@ public class OnlineManagerLOBBY : MonoBehaviour
 
 	private string userID;
 	private string passWord;
+	private DatabaseObject account;
+
 	private bool createAccount;
 	private string roomID;
 	private bool createRoom;
@@ -24,8 +26,8 @@ public class OnlineManagerLOBBY : MonoBehaviour
 
 	private void Start()
 	{
-		lobby.SetActive(false);
 		login.SetActive(true);
+		lobby.SetActive(false);
 	}
 
 	void FixedUpdate()
@@ -109,7 +111,7 @@ public class OnlineManagerLOBBY : MonoBehaviour
 			DatabaseObject newAccount = new DatabaseObject();
 			newAccount.Set("PassWord", passWord);
 			newAccount.Set("Victories", 0);
-			newAccount.Set("Deafeats", 0);
+			newAccount.Set("Defeats", 0);
 
 			_client.BigDB.CreateObject("AccountObjects", userID, newAccount, null);
 			GetComponent<LoginManager>().Base();
@@ -132,12 +134,14 @@ public class OnlineManagerLOBBY : MonoBehaviour
 			}
 
 			Debug.Log("Connected with correct Logins");
+			account = _account;
 
 			Debug.Log("Create ServerEndpoint");
 			// Comment out the line below to use the live servers instead of your development server
 			//_client.Multiplayer.DevelopmentServer = new ServerEndpoint("localhost", 8184);
 
 			lobby.SetActive(true);
+			GetComponent<LobbyManager>().Setup(userID, _account.GetInt("Victories"), _account.GetInt("Defeats"));
 			login.SetActive(false);
 
 			_client.Multiplayer.CreateJoinRoom
@@ -238,7 +242,7 @@ public class OnlineManagerLOBBY : MonoBehaviour
 		while (!loadingScene.isDone)
 			yield return null;
 
-		GlobalManager.Instance.OnlineManager.Connect(userID, roomID, createRoom);
+		GlobalManager.Instance.OnlineManager.Connect(userID, roomID, createRoom, account);
 
 		Destroy(gameObject);
 	}

@@ -74,14 +74,23 @@ public class GlobalManager : MonoBehaviour
         playersAlive--;
 
         if (playersAlive <= 1 && !lost)
+        {
             _uiManager.Victory();
+            _onlineManager.GameEnd(true);
+        }
         else
+        {
             _uiManager.Deafeat();
-
-        StartCoroutine(ReturnToLobby());
+            _onlineManager.GameEnd(false);
+        }
     }
 
-    private IEnumerator ReturnToLobby()
+    public void ReturnToLobby()
+    {
+        StartCoroutine(ReturnToLobbyCorout());
+    }
+
+    private IEnumerator ReturnToLobbyCorout()
     {
         _onlineManager.Disconnect();
         yield return new WaitForSeconds(3);
